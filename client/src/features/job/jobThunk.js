@@ -31,3 +31,13 @@ export const editJobThunk = async ({ jobId, job }, thunkAPI) => {
     return checkForUnauthorizedResponse(error, thunkAPI);
   }
 };
+
+export const generateDescription = async (position, thunkAPI) => {
+  try {
+    const resp = await customFetch.post(`/jobs/generateText`,{position});
+    thunkAPI.dispatch(clearValues());
+    return resp.data;
+  } catch (error) {
+    return checkForUnauthorizedResponse(error, thunkAPI);
+  }
+};

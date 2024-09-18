@@ -4,6 +4,11 @@ const { BadRequestError, NotFoundError } = require("../errors");
 const mongoose = require("mongoose");
 const moment = require("moment");
 const Company = require("../models/company");
+const {OpenAI} = require("openai")
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY
+});
 
 const getAllJobs = async (req, res) => {
   const { search, status, jobType, sort } = req.query;
@@ -170,6 +175,19 @@ const showStats = async (req, res) => {
   res.status(StatusCodes.OK).json({ defaultStats, monthlyApplications });
 };
 
+const generateText =async (req,res)=>{
+  const {position} = req.body;
+
+    const response = await openai.chat.completions.create({
+      model: 'gpt-4',
+      messages: [{ role: 'user', content: position }],
+      max_tokens: 150,
+      temperature: 0.7,
+    });
+
+    res.status(StatusCodes.OK).json(response.choices[0].message.content.trim());
+}
+
 module.exports = {
   createJob,
   deleteJob,
@@ -177,4 +195,5 @@ module.exports = {
   updateJob,
   getJob,
   showStats,
+  generateText
 };

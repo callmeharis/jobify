@@ -9,6 +9,7 @@ const {
   updateJob,
   getJob,
   showStats,
+  generateText,
 } = require('../controllers/jobs');
 
 router.route('/').post(testUser, createJob).get(getAllJobs);
@@ -19,5 +20,7 @@ router
   .get(getJob)
   .delete(testUser, deleteJob)
   .patch(testUser, updateJob);
+
+router.route('/generateText').post(generateText)
 
 module.exports = router;

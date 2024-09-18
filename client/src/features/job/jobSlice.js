@@ -1,10 +1,11 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
 import { getUserFromLocalStorage } from '../../utils/localStorage';
-import { createJobThunk, deleteJobThunk, editJobThunk } from './jobThunk';
+import { createJobThunk, deleteJobThunk, editJobThunk, generateDescription } from './jobThunk';
 const initialState = {
   isLoading: false,
   position: '',
+  descriptionText: "",
   company: '',
   jobLocation: '',
   jobTypeOptions: ['full-time', 'part-time', 'remote', 'internship'],
@@ -13,6 +14,7 @@ const initialState = {
   status: 'pending',
   isEditing: false,
   editJobId: '',
+  jobDescription: ["pending", "success", "failure"],
 };
 
 export const createJob = createAsyncThunk('job/createJob', createJobThunk);
@@ -20,6 +22,8 @@ export const createJob = createAsyncThunk('job/createJob', createJobThunk);
 export const deleteJob = createAsyncThunk('job/deleteJob', deleteJobThunk);
 
 export const editJob = createAsyncThunk('job/editJob', editJobThunk);
+
+export const generate_Description = createAsyncThunk("generate/description", generateDescription)
 
 const jobSlice = createSlice({
   name: 'job',
@@ -64,6 +68,17 @@ const jobSlice = createSlice({
       toast.success('Job Modified...');
     },
     [editJob.rejected]: (state, { payload }) => {
+      state.isLoading = false;
+      toast.error(payload);
+    },
+    [generate_Description.pending]: (state) => {
+      state.isLoading = true;
+    },
+    [generate_Description.fulfilled]: (state, {payload}) => {
+      state.isLoading = false;
+      state.descriptionText = payload;
+    },
+    [generate_Description.rejected]: (state, { payload }) => {
       state.isLoading = false;
       toast.error(payload);
     },
